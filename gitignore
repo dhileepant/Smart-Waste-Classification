@@ -1,0 +1,51 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Node / JavaScript
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+# Optional: lockfiles to track
+# package-lock.json
+# yarn.lock
+
+# Build / output
+dist/
+build/
+.out/
+.next/
+out/
+
+# Logs
+logs/
+*.log
+
+# OS / editors / IDEs
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Python (if present)
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Database / local storage
+*.sqlite
+*.db
+database.db
+
+# Uploaded assets / model artifacts
+uploads/
+models/*.onnx
+models/*.pt
+models/*.bin
+
+# Misc
+coverage/
+coverage-final.json
+*.local
