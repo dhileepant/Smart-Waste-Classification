@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Waste Classification | AI & Computer Vision{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♻️</text></svg>">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <div class="brand-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+            </div>
+            <span>EcoSort AI</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Dashboard</a></li>
+            <li><a href="/realtime" class="nav-link {% if request.path == '/realtime' %}active{% endif %}">Live Stream (OpenCV)</a></li>
+            <li><a href="/history" class="nav-link {% if request.path == '/history' %}active{% endif %}">History & Stats</a></li>
+            <li><a href="/about" class="nav-link {% if request.path == '/about' %}active{% endif %}">Model Architecture</a></li>
+        </ul>
+
+        <div class="nav-badge">
+            <span>CNN + OpenCV v2.0</span>
+        </div>
+    </nav>
+
+    <!-- Main Dynamic Content -->
+    <main class="main-container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p><strong>Smart Waste Classification System</strong> | Powered by Python, TensorFlow, OpenCV & Flask</p>
+        <p style="margin-top: 0.35rem; color: #4b5563;">Automated Environmental Recycling & Waste Segregation Engine</p>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
