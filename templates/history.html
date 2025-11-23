@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Classification Logs & History | EcoSort AI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Classification Logs & Analytics</h1>
+    <p class="page-subtitle">Track historical inference records, category distributions, and model performance metrics.</p>
+</div>
+
+<!-- Stats Summary Grid -->
+<div class="grid-4">
+    <div class="stat-card">
+        <div class="stat-icon blue">📊</div>
+        <div>
+            <div class="stat-value">{{ stats.total_classified }}</div>
+            <div class="stat-label">Total Inferences</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">♻️</div>
+        <div>
+            <div class="stat-value" style="color: #34d399;">{{ stats.recyclable_count }}</div>
+            <div class="stat-label">Recyclable ({{ "%.1f"|format((stats.recyclable_count / stats.total_classified * 100) if stats.total_classified > 0 else 0) }}%)</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon red">⚠️</div>
+        <div>
+            <div class="stat-value" style="color: #f87171;">{{ stats.hazardous_count }}</div>
+            <div class="stat-label">Hazardous ({{ "%.1f"|format((stats.hazardous_count / stats.total_classified * 100) if stats.total_classified > 0 else 0) }}%)</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue">⚡</div>
+        <div>
+            <div class="stat-value">{{ "%.1f"|format((stats.total_latency_ms / stats.total_classified) if stats.total_classified > 0 else 0) }} <span style="font-size: 1rem;">ms</span></div>
+            <div class="stat-label">Avg Inference Latency</div>
+        </div>
+    </div>
+</div>
+
+<!-- History Table Card -->
+<div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3>Recent Classification Activity</h3>
+        {% if history|length > 0 %}
+        <button onclick="clearHistory()" class="btn btn-secondary" style="font-size: 0.82rem; padding: 0.4rem 0.8rem;">
+            Clear History
+        </button>
+        {% endif %}
+    </div>
+
+    {% if history|length > 0 %}
+    <div style="overflow-x: auto;">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Source / File</th>
+                    <th>Predicted Category</th>
+                    <th>Confidence</th>
+                    <th>Recommended Bin</th>
+                    <th>Latency</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td style="color: var(--text-dim);">#{{ item.id }}</td>
+                    <td style="font-weight: 600;">{{ item.filename }}</td>
+                    <td>
+                        <span class="badge {{ item.badge_class }}">
+                            {{ item.title }}
+                        </span>
+                    </td>
+                    <td style="font-weight: 700; color: {{ item.color }};">{{ item.confidence }}%</td>
+                    <td style="color: var(--text-muted);">{{ item.bin_type }}</td>
+                    <td style="color: var(--text-dim);">{{ item.inference_time_ms }} ms</td>
+                    <td style="color: var(--text-dim); font-size: 0.82rem;">{{ item.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-dim);">
+        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No classification activity logged in this session.</p>
+        <p style="font-size: 0.88rem; margin-bottom: 1.25rem;">Upload waste images on the Dashboard or start the Real-Time video stream to populate logs.</p>
+        <a href="/" class="btn btn-primary">Go to Dashboard</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function clearHistory() {
+    if (confirm('Are you sure you want to clear the classification history?')) {
+        try {
+            await fetch('/api/clear_history', { method: 'POST' });
+            window.location.reload();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+}
+</script>
+{% endblock %}
