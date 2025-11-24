@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Model Architecture & System Specs | EcoSort AI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Model Architecture & System Design</h1>
+    <p class="page-subtitle">Deep dive into the Convolutional Neural Network (CNN), OpenCV computer vision pipeline, and Flask deployment architecture.</p>
+</div>
+
+<!-- Resume Highlights Callout -->
+<div class="glass-card" style="border-left: 4px solid var(--primary); margin-bottom: 2rem;">
+    <h3 style="color: #34d399; margin-bottom: 0.75rem;">🚀 Project Key Highlights</h3>
+    <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 0.75rem; color: var(--text-muted);">
+        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+            <span style="color: var(--primary); font-size: 1.1rem;">•</span>
+            <div><strong style="color: #fff;">Automated Waste Classification:</strong> Custom multi-block Convolutional Neural Network (CNN) categorizing waste into recyclable and hazardous/non-recyclable types with high accuracy.</div>
+        </li>
+        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+            <span style="color: var(--primary); font-size: 1.1rem;">•</span>
+            <div><strong style="color: #fff;">Real-Time OpenCV Pipeline & Flask Deployment:</strong> Low-latency image processing pipeline utilizing OpenCV for adaptive filtering, color conversion, ROI bounding box overlays, and MJPEG video streaming deployed via Flask.</div>
+        </li>
+        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+            <span style="color: var(--primary); font-size: 1.1rem;">•</span>
+            <div><strong style="color: #fff;">Performance Optimization & Hyperparameter Tuning:</strong> Extensive data augmentation (rotation, zooming, horizontal flipping, shear) and regularization (BatchNormalization, spatial Dropout, learning rate decay) delivering fast, robust predictions.</div>
+        </li>
+    </ul>
+</div>
+
+<!-- CNN Model Architecture Breakdown -->
+<div class="glass-card" style="margin-bottom: 2rem;">
+    <h3 style="margin-bottom: 1.25rem;">🧠 Convolutional Neural Network (CNN) Layers</h3>
+    
+    <div class="grid-3" style="margin-bottom: 1.5rem;">
+        <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-top: 3px solid var(--secondary);">
+            <h4 style="color: #60a5fa; margin-bottom: 0.5rem;">Feature Extractor: Block 1</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+                • <code>Conv2D(32, 3x3)</code> + ReLU<br>
+                • <code>BatchNormalization()</code><br>
+                • <code>Conv2D(32, 3x3)</code> + ReLU<br>
+                • <code>MaxPooling2D(2x2)</code><br>
+                • <code>Dropout(0.25)</code>
+            </p>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-top: 3px solid var(--primary);">
+            <h4 style="color: #34d399; margin-bottom: 0.5rem;">Mid-Level Patterns: Block 2</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+                • <code>Conv2D(64, 3x3)</code> + ReLU<br>
+                • <code>BatchNormalization()</code><br>
+                • <code>Conv2D(64, 3x3)</code> + ReLU<br>
+                • <code>MaxPooling2D(2x2)</code><br>
+                • <code>Dropout(0.25)</code>
+            </p>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-top: 3px solid #8b5cf6;">
+            <h4 style="color: #a78bfa; margin-bottom: 0.5rem;">High-Level Semantics: Block 3</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+                • <code>Conv2D(128, 3x3)</code> + ReLU<br>
+                • <code>BatchNormalization()</code><br>
+                • <code>Conv2D(128, 3x3)</code> + ReLU<br>
+                • <code>MaxPooling2D(2x2)</code><br>
+                • <code>Dropout(0.30)</code>
+            </p>
+        </div>
+    </div>
+
+    <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-left: 3px solid #f59e0b;">
+        <h4 style="color: #fbbf24; margin-bottom: 0.5rem;">Classification Head</h4>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">
+            • <code>Flatten()</code> $\rightarrow$ <code>Dense(512, ReLU)</code> $\rightarrow$ <code>BatchNormalization()</code> $\rightarrow$ <code>Dropout(0.50)</code> $\rightarrow$ <code>Dense(2, Softmax)</code><br>
+            • <strong>Optimizer:</strong> Adam with learning rate reduction on plateau (decay factor 0.3)<br>
+            • <strong>Loss Function:</strong> Categorical Cross-Entropy
+        </p>
+    </div>
+</div>
+
+<!-- OpenCV Pipeline & Training Specifications -->
+<div class="grid-2">
+    <div class="glass-card">
+        <h3 style="margin-bottom: 1rem;">📷 OpenCV Processing Pipeline</h3>
+        <ul style="list-style-type: disc; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <li><strong>BGR to RGB Conversion:</strong> Standardizes color channels across camera hardware.</li>
+            <li><strong>CLAHE Enhancement:</strong> Contrast Limited Adaptive Histogram Equalization for varied lighting conditions.</li>
+            <li><strong>Spatial Resizing:</strong> Interpolation to $224 \times 224$ pixels matching CNN tensor dimensions.</li>
+            <li><strong>Tensor Normalization:</strong> Pixel scaling from $[0, 255]$ integer range to $[0.0, 1.0]$ float32.</li>
+            <li><strong>Live ROI HUD:</strong> Real-time bounding box rendering and category status banners.</li>
+        </ul>
+    </div>
+
+    <div class="glass-card">
+        <h3 style="margin-bottom: 1rem;">🔄 Data Augmentation Strategy</h3>
+        <ul style="list-style-type: disc; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <li><strong>Random Rotation:</strong> $\pm 25^\circ$ to handle orientation variance.</li>
+            <li><strong>Width & Height Shift:</strong> $15\%$ translational jitter.</li>
+            <li><strong>Shear Transformation:</strong> $15\%$ perspective distortion.</li>
+            <li><strong>Zoom Range:</strong> $20\%$ scaling to simulate variable camera distances.</li>
+            <li><strong>Horizontal Flipping:</strong> Simulates mirror symmetries of bottles, cans, and cartons.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
