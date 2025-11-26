@@ -13,13 +13,13 @@ from tensorflow.keras.callbacks import (
 )
 
 from src.data_preprocessing import load_and_preprocess_data, create_data_generator
-from src.model import build_cnn_model
+from src.model import build_cnn_model, build_mobilenet_model
 from src.utils import save_class_indices
 
 def train_model(data_dir="data", output_model_path="models/waste_classifier.h5", 
-                img_size=(224, 224), epochs=10, batch_size=32, max_samples_per_class=None):
+                img_size=(224, 224), epochs=8, batch_size=16, max_samples_per_class=137, use_transfer_learning=True):
     """
-    Complete training pipeline for the Smart Waste Classification CNN model.
+    Complete training pipeline for the Smart Waste Classification model.
     """
     os.makedirs("models", exist_ok=True)
     os.makedirs("static/img", exist_ok=True)
@@ -48,29 +48,28 @@ def train_model(data_dir="data", output_model_path="models/waste_classifier.h5",
     print(f"[Split] Training set: {len(X_train)} samples")
     print(f"[Split] Validation set: {len(X_val)} samples")
     
-    # 3. Data Augmentation
-    train_gen = create_data_generator(X_train, y_train, batch_size=batch_size)
-    
-    # 4. Build CNN Architecture
-    model = build_cnn_model(
-        input_shape=(*img_size, 3), 
-        num_classes=len(class_names),
-        learning_rate=0.001
-    )
+    # 3. Model Architecture Selection
+    if use_transfer_learning:
+        print("\n[Model] Building MobileNetV2 Transfer Learning Architecture...")
+        model = build_mobilenet_model(input_shape=(*img_size, 3), num_classes=len(class_names), learning_rate=0.001)
+    else:
+        print("\n[Model] Building Custom 3-Block CNN Architecture...")
+        model = build_cnn_model(input_shape=(*img_size, 3), num_classes=len(class_names), learning_rate=0.0003)
+        
     model.summary()
     
-    # 5. Callbacks for hyperparameter tuning & regularization
+    # 4. Callbacks for hyperparameter tuning & regularization
     callbacks = [
         EarlyStopping(
-            monitor='val_loss',
-            patience=5,
+            monitor='val_accuracy', 
+            patience=5, 
             restore_best_weights=True,
             verbose=1
         ),
         ReduceLROnPlateau(
-            monitor='val_loss',
-            factor=0.3,
-            patience=3,
+            monitor='val_loss', 
+            factor=0.3, 
+            patience=2, 
             min_lr=1e-6,
             verbose=1
         ),
@@ -82,12 +81,11 @@ def train_model(data_dir="data", output_model_path="models/waste_classifier.h5",
         )
     ]
     
-    # 6. Fit model
-    steps_per_epoch = max(1, len(X_train) // batch_size)
-    print("\n[Training] Commencing CNN training loop with augmentation...")
+    # 5. Model Training Loop
+    print("\n[Training] Commencing training loop...")
     history = model.fit(
-        train_gen,
-        steps_per_epoch=steps_per_epoch,
+        X_train, y_train,
+        batch_size=batch_size,
         epochs=epochs,
         validation_data=(X_val, y_val),
         callbacks=callbacks,
@@ -98,43 +96,41 @@ def train_model(data_dir="data", output_model_path="models/waste_classifier.h5",
     model.save(output_model_path)
     print(f"\n[Training] Model successfully trained and saved to: {output_model_path}")
     
-    # 7. Generate & Save Training Plots
-    plot_training_curves(history, "static/img/training_history.png")
+    # 6. Plot & Save Training History Curves
+    plot_training_history(history, "static/img/training_history.png")
     
     return model, history
 
-def plot_training_curves(history, output_path="static/img/training_history.png"):
+def plot_training_history(history, save_path="static/img/training_history.png"):
     """
-    Generate clean accuracy and loss curves for documentation and web dashboard.
+    Plot and save training accuracy & loss curves.
     """
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
-    epochs_range = range(1, len(history.history['accuracy']) + 1)
+    plt.figure(figsize=(12, 4.5))
     
-    # Accuracy Curve
-    ax1.plot(epochs_range, history.history['accuracy'], 'b-o', label='Training Accuracy', linewidth=2)
-    ax1.plot(epochs_range, history.history['val_accuracy'], 'g-s', label='Validation Accuracy', linewidth=2)
-    ax1.set_title('Model Classification Accuracy', fontsize=14, fontweight='bold')
-    ax1.set_xlabel('Epochs', fontsize=12)
-    ax1.set_ylabel('Accuracy', fontsize=12)
-    ax1.legend(loc='lower right')
-    ax1.grid(True, linestyle='--', alpha=0.6)
+    # Accuracy Plot
+    plt.subplot(1, 2, 1)
+    plt.plot(history.history.get('accuracy', []), label='Training Accuracy', color='#10b981', linewidth=2.2)
+    plt.plot(history.history.get('val_accuracy', []), label='Validation Accuracy', color='#3b82f6', linewidth=2.2, linestyle='--')
+    plt.title('Model Accuracy vs Epochs', fontsize=12, fontweight='bold')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend(loc='lower right')
+    plt.grid(True, linestyle=':', alpha=0.6)
     
-    # Loss Curve
-    ax2.plot(epochs_range, history.history['loss'], 'r-o', label='Training Loss', linewidth=2)
-    ax2.plot(epochs_range, history.history['val_loss'], 'm-s', label='Validation Loss', linewidth=2)
-    ax2.set_title('Cross-Entropy Loss', fontsize=14, fontweight='bold')
-    ax2.set_xlabel('Epochs', fontsize=12)
-    ax2.set_ylabel('Loss', fontsize=12)
-    ax2.legend(loc='upper right')
-    ax2.grid(True, linestyle='--', alpha=0.6)
+    # Loss Plot
+    plt.subplot(1, 2, 2)
+    plt.plot(history.history.get('loss', []), label='Training Loss', color='#ef4444', linewidth=2.2)
+    plt.plot(history.history.get('val_loss', []), label='Validation Loss', color='#f59e0b', linewidth=2.2, linestyle='--')
+    plt.title('Loss Convergence vs Epochs', fontsize=12, fontweight='bold')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend(loc='upper right')
+    plt.grid(True, linestyle=':', alpha=0.6)
     
     plt.tight_layout()
-    plt.savefig(output_path, dpi=200)
+    plt.savefig(save_path, dpi=300)
     plt.close()
-    print(f"[Training] Training curves saved to: {output_path}")
+    print(f"[Training] Training curves saved to: {save_path}")
 
 if __name__ == "__main__":
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_directory = os.path.join(project_root, "data")
-    model_output = os.path.join(project_root, "models", "waste_classifier.h5")
-    train_model(data_dir=data_directory, output_model_path=model_output, epochs=10, batch_size=32)
+    train_model(epochs=6, max_samples_per_class=137, use_transfer_learning=True)
