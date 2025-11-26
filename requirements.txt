@@ -1,5 +1,5 @@
-tensorflow>=2.10.0
-opencv-python>=4.5.0
+tensorflow>=2.15.0
+opencv-python-headless>=4.5.0
 flask>=2.2.0
 flask-cors>=4.0.0
 numpy>=1.21.0
@@ -10,3 +10,4 @@ seaborn>=0.11.0
 pillow>=8.3.0
 Werkzeug>=2.2.0
 Jinja2>=3.1.0
+gunicorn>=21.0.0
