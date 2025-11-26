@@ -1,0 +1,9 @@
+services:
+  ecosort-ai:
+    build: .
+    container_name: smart_waste_classifier
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    environment:
+      - PORT=5000
