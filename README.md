@@ -1,5 +1,14 @@
 # ♻️ Smart Waste Classification System
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-10b981?style=for-the-badge&logo=render&logoColor=white)](https://ecosort-waste-classifier.onrender.com/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/dhileepant/Smart-Waste-Classification)
+[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
+[![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://opencv.org/)
+[![Flask](https://img.shields.io/badge/Flask-Web%20App-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+
+> 🌐 **Live Application URL:** [https://ecosort-waste-classifier.onrender.com/](https://ecosort-waste-classifier.onrender.com/)
+
 An automated, real-time waste classification system built with **Python, TensorFlow, OpenCV, Flask, and HTML/CSS**. The system classifies waste into **Recyclable** and **Hazardous / Non-Recyclable** categories using a custom deep Convolutional Neural Network (CNN) and provides a real-time computer vision detection stream.
 
 ---
