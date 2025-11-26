@@ -1,135 +1,204 @@
 {% extends "base.html" %}
 
-{% block title %}EcoSort AI | Smart Waste Classification Dashboard{% endblock %}
+{% block title %}EcoSort AI | Enterprise Waste Classification Dashboard{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1 class="page-title">Smart Waste Classification Bin</h1>
-    <p class="page-subtitle">AI-powered computer vision pipeline for automated waste segregation and recyclable sorting.</p>
+<!-- Hero Section -->
+<div class="hero-banner">
+    <div class="hero-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span>TensorFlow CNN v2.4 &bull; OpenCV Pipeline &bull; Low Latency</span>
+    </div>
+    <h1 class="page-title">Smart Waste Classification System</h1>
+    <p class="page-subtitle">
+        Automated real-time segregation of municipal, recyclable, and hazardous waste using deep convolutional neural networks and computer vision.
+    </p>
 </div>
 
-<!-- Stats Counter Bar -->
-<div class="grid-3" style="margin-bottom: 2rem;">
-    <div class="stat-card">
-        <div class="stat-icon blue">📦</div>
-        <div>
-            <div class="stat-value">{{ stats.total_classified }}</div>
-            <div class="stat-label">Total Inferences Run</div>
+<!-- KPI Metrics Grid -->
+<div class="grid-metrics">
+    <div class="kpi-card">
+        <div class="kpi-icon-wrap blue">📦</div>
+        <div class="kpi-data-wrap">
+            <div class="kpi-val" id="statTotal">{{ stats.total_classified }}</div>
+            <div class="kpi-lbl">Total Inferences</div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon green">♻️</div>
-        <div>
-            <div class="stat-value" style="color: #34d399;">{{ stats.recyclable_count }}</div>
-            <div class="stat-label">Recyclable Items Detected</div>
+    <div class="kpi-card">
+        <div class="kpi-icon-wrap green">♻️</div>
+        <div class="kpi-data-wrap">
+            <div class="kpi-val" id="statRecyclable" style="color: var(--primary-light);">{{ stats.recyclable_count }}</div>
+            <div class="kpi-lbl">Recyclable Items</div>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon red">⚠️</div>
-        <div>
-            <div class="stat-value" style="color: #f87171;">{{ stats.hazardous_count }}</div>
-            <div class="stat-label">Hazardous Items Flagged</div>
+    <div class="kpi-card">
+        <div class="kpi-icon-wrap red">⚠️</div>
+        <div class="kpi-data-wrap">
+            <div class="kpi-val" id="statHazardous" style="color: var(--danger-light);">{{ stats.hazardous_count }}</div>
+            <div class="kpi-lbl">Hazardous Flagged</div>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon-wrap purple">⚡</div>
+        <div class="kpi-data-wrap">
+            <div class="kpi-val" id="statLatency" style="color: #c084fc;">
+                {{ "%.1f"|format((stats.total_latency_ms / stats.total_classified) if stats.total_classified > 0 else 0) }} <span style="font-size: 1rem; font-weight: 600;">ms</span>
+            </div>
+            <div class="kpi-lbl">Avg Latency</div>
         </div>
     </div>
 </div>
 
-<!-- Main Classification Workspace (2 Columns) -->
-<div class="grid-2">
-    <!-- Left Column: Upload & Image Feed -->
+<!-- Main Classification Studio (2 Columns) -->
+<div class="grid-2col">
+    <!-- Left: Input Workspace -->
     <div class="glass-card">
-        <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-            <span>📸 Input Waste Image</span>
-        </h3>
-        
-        <div class="upload-dropzone" id="uploadDropzone">
-            <div class="dropzone-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="card-header-clean">
+            <div class="card-title-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>1. Input Waste Item</span>
+            </div>
+            <span class="telemetry-chip">JPG, PNG, WEBP</span>
+        </div>
+
+        <!-- Drag & Drop Zone -->
+        <div class="dropzone-studio" id="uploadDropzone">
+            <div class="dropzone-icon-ring">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="17 8 12 3 7 8"></polyline>
                     <line x1="12" y1="3" x2="12" y2="15"></line>
                 </svg>
             </div>
-            <div class="dropzone-title">Drag & Drop Waste Image</div>
-            <p class="dropzone-text">Supports JPG, PNG, WEBP high-resolution waste captures</p>
+            <div class="dropzone-prompt-title">Drag &amp; Drop Waste Image Here</div>
+            <p class="dropzone-prompt-desc">Click anywhere to browse local image or drag a photo into this frame</p>
             <input type="file" id="fileInput" class="file-input" accept="image/*">
-            <button type="button" class="btn btn-secondary">Browse Local Image</button>
+            <button type="button" class="btn btn-secondary" style="pointer-events: none;">
+                Browse Local File
+            </button>
+
+            <!-- Quick-Select Sample Test Images -->
+            <div class="quick-samples-bar">
+                <div class="quick-samples-title">
+                    <span>⚡ Quick Test Samples (1-Click AI Demo):</span>
+                </div>
+                <div class="sample-chips-wrap">
+                    <button type="button" class="sample-chip" data-sample="/static/samples/plastic.jpg">
+                        <span>🥤 Plastic Bottle</span>
+                    </button>
+                    <button type="button" class="sample-chip" data-sample="/static/samples/cardboard.jpg">
+                        <span>📦 Cardboard</span>
+                    </button>
+                    <button type="button" class="sample-chip" data-sample="/static/samples/glass.jpg">
+                        <span>🍶 Glass Jar</span>
+                    </button>
+                    <button type="button" class="sample-chip" data-sample="/static/samples/metal.jpg">
+                        <span>🥫 Metal Can</span>
+                    </button>
+                    <button type="button" class="sample-chip" data-sample="/static/samples/paper.jpg">
+                        <span>📄 Paper Sheet</span>
+                    </button>
+                    <button type="button" class="sample-chip" data-sample="/static/samples/hazardous.jpg" style="border-color: rgba(239,68,68,0.35);">
+                        <span>🔋 Hazardous / E-Waste</span>
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- Selected Image Preview -->
-        <div class="preview-container" id="previewContainer">
-            <img id="previewImage" class="preview-image" alt="Waste Preview">
-            <div class="btn-group" style="margin-top: 1rem;">
+        <!-- Preview Card -->
+        <div class="preview-card" id="previewCard">
+            <div class="scan-line" id="scanLine"></div>
+            <img id="previewImage" class="preview-img-frame" alt="Waste Image Preview">
+            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
                 <button id="classifyBtn" class="btn btn-primary" style="flex: 2;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    Classify Image
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    Run AI Classification
                 </button>
                 <button id="clearBtn" class="btn btn-secondary" style="flex: 1;">Clear</button>
             </div>
         </div>
     </div>
 
-    <!-- Right Column: Real-time AI Inference Result -->
+    <!-- Right: Telemetry & Result Studio -->
     <div class="glass-card">
-        <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-            <span>🧠 Model Prediction & Analysis</span>
-        </h3>
-        
-        <div class="result-box">
-            <!-- Empty State Placeholder -->
-            <div id="resultPlaceholder" class="result-placeholder">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-                <h4 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.25rem;">No Image Analyzed Yet</h4>
-                <p style="font-size: 0.88rem;">Upload or capture a waste item to run real-time CNN classification.</p>
+        <div class="card-header-clean">
+            <div class="card-title-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2.2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                <span>2. AI Prediction &amp; Telemetry</span>
+            </div>
+            <span class="nav-status-pill" style="font-size: 0.7rem;">Inference Engine Ready</span>
+        </div>
+
+        <div class="result-studio-wrap">
+            <!-- Idle State -->
+            <div id="idleState" class="idle-radar-state">
+                <div class="idle-radar-circle">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="6"></circle>
+                        <line x1="12" y1="2" x2="12" y2="22"></line>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                    </svg>
+                </div>
+                <h4 style="font-size: 1.15rem; color: #fff; margin-bottom: 0.35rem;">Awaiting Waste Input</h4>
+                <p style="font-size: 0.88rem; color: var(--text-tertiary); max-width: 320px; margin: 0 auto;">
+                    Upload an image or pick a quick test sample on the left to trigger the convolutional neural network.
+                </p>
             </div>
 
             <!-- Dynamic Result Container -->
-            <div id="resultContainer" style="display: none;"></div>
+            <div id="resultStudio" style="display: none;"></div>
         </div>
     </div>
 </div>
 
-<!-- Informational Category Cards -->
-<h3 style="margin-bottom: 1.25rem;">Waste Category Reference Guide</h3>
-<div class="grid-2">
-    <!-- Recyclable Card -->
-    <div class="glass-card" style="border-top: 3px solid #10b981;">
-        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-            <div style="background: rgba(16, 185, 129, 0.2); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 1.3rem;">
+<!-- Segregation Reference Cards -->
+<div style="margin-top: 1rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+    <h3>Waste Segregation &amp; Material Reference Guide</h3>
+    <a href="/realtime" class="btn btn-secondary" style="font-size: 0.84rem; padding: 0.45rem 1rem;">
+        Launch Live CV Stream &rarr;
+    </a>
+</div>
+
+<div class="grid-2col">
+    <!-- Recyclable Matrix Card -->
+    <div class="glass-card" style="border-top: 3px solid var(--primary);">
+        <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem;">
+            <div class="kpi-icon-wrap green" style="width: 44px; height: 44px; font-size: 1.25rem;">
                 ♻️
             </div>
             <div>
-                <h4 style="color: #34d399; font-size: 1.2rem;">Recyclable Waste</h4>
-                <span style="font-size: 0.8rem; color: var(--text-dim);">Designated Blue / Green Bins</span>
+                <h4 style="color: var(--primary-light); font-size: 1.15rem;">Recyclable Waste Stream</h4>
+                <span style="font-size: 0.78rem; color: var(--text-tertiary); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Designated Blue / Green Bins</span>
             </div>
         </div>
-        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
-            Plastics, cardboard, clean paper, metal cans, glass bottles, and beverage containers suitable for industrial remanufacturing.
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Comprises clean thermoplastics (PET, HDPE, PP), corrugated cardboard, office paper, glass bottles, and aluminum/tin containers.
         </p>
-        <div style="background: rgba(0, 0, 0, 0.25); padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; color: var(--text-muted);">
-            💡 <strong>Best Practice:</strong> Empty all liquids and flatten containers to optimize recycling collection efficiency.
+        <div style="background: var(--bg-surface-1); padding: 0.85rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; border: 1px solid var(--border-subtle); color: var(--text-secondary);">
+            💡 <strong>Industrial Workflow:</strong> Materials are sorted, shredded into flakes, washed, melted into pellets, and reused in manufacturing cycles.
         </div>
     </div>
 
-    <!-- Hazardous Card -->
-    <div class="glass-card" style="border-top: 3px solid #ef4444;">
-        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-            <div style="background: rgba(239, 68, 68, 0.2); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 1.3rem;">
+    <!-- Hazardous Matrix Card -->
+    <div class="glass-card" style="border-top: 3px solid var(--danger);">
+        <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem;">
+            <div class="kpi-icon-wrap red" style="width: 44px; height: 44px; font-size: 1.25rem;">
                 ⚠️
             </div>
             <div>
-                <h4 style="color: #f87171; font-size: 1.2rem;">Hazardous / Non-Recyclable</h4>
-                <span style="font-size: 0.8rem; color: var(--text-dim);">Designated Red / E-Waste Centers</span>
+                <h4 style="color: var(--danger-light); font-size: 1.15rem;">Hazardous / Non-Recyclable Stream</h4>
+                <span style="font-size: 0.78rem; color: var(--text-tertiary); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Designated Red / E-Waste Facility</span>
             </div>
         </div>
-        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
-            Lithium batteries, electronic circuits (e-waste), chemical solvents, pesticides, mercury bulbs, and bio-hazardous materials.
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Includes lithium-ion batteries, printed circuit boards (e-waste), toxic chemical bottles, fluorescent tubes, and medical consumables.
         </p>
-        <div style="background: rgba(0, 0, 0, 0.25); padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; color: var(--text-muted);">
-            🚫 <strong>Caution:</strong> Never discard into standard trash. Heavy metals and electrolytes contaminate soil and water tables.
+        <div style="background: var(--bg-surface-1); padding: 0.85rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; border: 1px solid var(--border-subtle); color: var(--text-secondary);">
+            🚫 <strong>Environmental Warning:</strong> Must never enter municipal landfills. Toxic electrolytes (cadmium, lead, mercury) cause groundwater contamination.
         </div>
     </div>
 </div>

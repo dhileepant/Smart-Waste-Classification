@@ -1,86 +1,181 @@
 {% extends "base.html" %}
 
-{% block title %}Real-Time Waste Classification | OpenCV Stream{% endblock %}
+{% block title %}Real-Time CV Monitoring Station | EcoSort AI{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1 class="page-title">Real-Time OpenCV Detection Stream</h1>
-    <p class="page-subtitle">Continuous video processing pipeline with region-of-interest targeting and automatic categorization.</p>
+<div class="hero-banner" style="margin-bottom: 2rem;">
+    <div class="hero-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+        <span>OpenCV Video Capture Engine &bull; 30 FPS Stream &bull; Live Telemetry</span>
+    </div>
+    <h1 class="page-title">Real-Time Computer Vision Monitoring</h1>
+    <p class="page-subtitle">
+        Continuous video stream pipeline featuring adaptive CLAHE contrast enhancement, Region-of-Interest (ROI) segmentation, and asynchronous CNN inference.
+    </p>
 </div>
 
-<div class="grid-2">
-    <!-- Stream Column -->
-    <div class="glass-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="display: flex; align-items: center; gap: 0.5rem;">
-                <span>📹 Video Stream</span>
-            </h3>
-            <span class="nav-badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3);">
-                30 FPS Real-Time
+<!-- Main CV Monitoring Station Grid (Split Layout) -->
+<div class="cv-station-grid">
+    <!-- Left: Live Video Viewport Studio -->
+    <div class="glass-card" style="padding: 1.5rem;">
+        <div class="card-header-clean" style="margin-bottom: 1rem;">
+            <div class="card-title-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2.2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                </svg>
+                <span>Live Viewport Studio</span>
+            </div>
+            
+            <!-- Stream Mode Switcher -->
+            <div style="display: flex; gap: 0.4rem;">
+                <button id="tabOpencv" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;" onclick="switchMode('opencv')">
+                    OpenCV Backend Feed
+                </button>
+                <button id="tabBrowser" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;" onclick="switchMode('browser')">
+                    Browser Camera Mode
+                </button>
+            </div>
+        </div>
+
+        <!-- Video Viewport Frame -->
+        <div class="video-viewport-box">
+            <!-- HUD Telemetry Overlay -->
+            <div class="hud-top-telemetry">
+                <span class="telemetry-chip" style="color: var(--primary-light);">
+                    <span class="pulsing-dot" style="display: inline-block; margin-right: 4px;"></span> LIVE
+                </span>
+                <span class="telemetry-chip" id="hudFps">30.0 FPS</span>
+                <span class="telemetry-chip">224x224 TENSOR</span>
+            </div>
+
+            <!-- Mode 1: OpenCV Server MJPEG Feed -->
+            <div id="opencvContainer" style="width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center;">
+                <img src="{{ url_for('video_feed') }}" alt="OpenCV Live MJPEG Feed" class="video-stream-el" onerror="this.onerror=null; this.src=''; this.alt='Server OpenCV camera feed initializing or camera offline. Switch to Browser Camera mode.';">
+                <div class="hud-crosshair-overlay"></div>
+            </div>
+
+            <!-- Mode 2: Direct Browser Webcam Video -->
+            <div id="browserContainer" style="width: 100%; height: 100%; display: none; position: relative; flex-direction: column; align-items: center; justify-content: center; background: #040711;">
+                <video id="webcamVideo" class="video-stream-el" autoplay playsinline style="display: none;"></video>
+                <div class="hud-crosshair-overlay"></div>
+                
+                <div id="browserPrompt" style="padding: 2rem; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📹</div>
+                    <h4 style="font-size: 1.1rem; margin-bottom: 0.4rem;">Direct Device Camera Ingestion</h4>
+                    <p style="color: var(--text-tertiary); font-size: 0.86rem; margin-bottom: 1.25rem; max-width: 320px;">
+                        Use your laptop or webcam device to capture real-time waste items directly.
+                    </p>
+                    <button id="startCamBtn" class="btn btn-primary">Enable Browser Webcam</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Camera Action Control Bar -->
+        <div style="display: flex; gap: 0.75rem; margin-top: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <div style="display: flex; gap: 0.5rem;">
+                <button id="captureBtn" class="btn btn-primary" style="display: none; font-size: 0.88rem; padding: 0.55rem 1.1rem;">
+                    📸 Capture &amp; Classify Frame
+                </button>
+                <button id="autoToggleBtn" class="btn btn-secondary" style="display: none; font-size: 0.88rem; padding: 0.55rem 1.1rem;">
+                    ⚡ Enable Auto-Detect
+                </button>
+                <button id="stopCamBtn" class="btn btn-danger" style="display: none; font-size: 0.88rem; padding: 0.55rem 1.1rem;">
+                    Stop Camera
+                </button>
+            </div>
+            <span style="font-size: 0.8rem; color: var(--text-tertiary);">
+                Inference Target: <strong>Central ROI Window</strong>
             </span>
         </div>
 
-        <!-- Mode Toggle Tabs -->
-        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-            <button id="tabOpencv" class="btn btn-primary" style="flex: 1; font-size: 0.85rem; padding: 0.5rem;" onclick="switchMode('opencv')">
-                OpenCV Backend Feed
-            </button>
-            <button id="tabBrowser" class="btn btn-secondary" style="flex: 1; font-size: 0.85rem; padding: 0.5rem;" onclick="switchMode('browser')">
-                Browser Camera Mode
-            </button>
-        </div>
-
-        <!-- Mode 1: OpenCV Server MJPEG Stream -->
-        <div id="opencvContainer" class="video-stream-wrapper">
-            <img src="{{ url_for('video_feed') }}" alt="OpenCV Live MJPEG Stream" class="stream-img" onerror="this.onerror=null; this.src=''; this.alt='Camera feed initializing or server camera unavailable. Switch to Browser Camera mode.';">
-        </div>
-
-        <!-- Mode 2: Browser Client-side Webcam -->
-        <div id="browserContainer" class="video-stream-wrapper" style="display: none; min-height: 320px; justify-content: center; align-items: center; background: #080c14;">
-            <video id="webcamVideo" class="webcam-video" autoplay playsinline style="display: none;"></video>
-            <div style="padding: 2rem; text-align: center;" id="browserPrompt">
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Capture live items directly from your device webcam.</p>
-                <button id="startCamBtn" class="btn btn-primary">Enable Browser Webcam</button>
-                <button id="stopCamBtn" class="btn btn-danger" style="display: none;">Stop Camera</button>
-                <button id="captureBtn" class="btn btn-primary" style="display: none; margin-left: 0.5rem;">📸 Capture & Classify</button>
+        <!-- Recent Snapshot Reel -->
+        <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle);">
+            <div style="font-size: 0.76rem; text-transform: uppercase; color: var(--text-tertiary); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 0.6rem;">
+                Recent Capture Snapshots Reel:
+            </div>
+            <div id="snapshotsReel" style="display: flex; gap: 0.6rem; overflow-x: auto; padding-bottom: 0.4rem;">
+                <div style="font-size: 0.82rem; color: var(--text-tertiary); font-style: italic; padding: 0.35rem 0;">
+                    Capture frames to populate real-time snapshot gallery.
+                </div>
             </div>
         </div>
-
-        <!-- Browser Capture Results -->
-        <div id="webcamResult" style="display: none;"></div>
     </div>
 
-    <!-- Instructions & Specs Column -->
-    <div class="glass-card">
-        <h3 style="margin-bottom: 1rem;">🔬 Computer Vision Pipeline Specs</h3>
-        
-        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-            <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-left: 3px solid var(--secondary);">
-                <h4 style="font-size: 1rem; color: #fff; margin-bottom: 0.4rem;">1. Region-of-Interest (ROI) Targeting</h4>
-                <p style="font-size: 0.88rem; color: var(--text-muted);">
-                    The OpenCV engine continuously isolates a central region from the input video frame to eliminate background clutter and isolate the target item.
-                </p>
+    <!-- Right: Live CV Telemetry & Pipeline Specs -->
+    <div class="glass-card" style="padding: 1.5rem;">
+        <div class="card-header-clean" style="margin-bottom: 1rem;">
+            <div class="card-title-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2"><path d="M12 20V10"></path><path d="M18 20V4"></path><path d="M6 20v-4"></path></svg>
+                <span>Live Classification Telemetry</span>
+            </div>
+            <span class="telemetry-chip" id="cvLatencyVal" style="color: var(--secondary);">12.4 ms</span>
+        </div>
+
+        <!-- Active Classification HUD Card -->
+        <div style="background: var(--bg-surface-1); border-radius: var(--radius-md); border: 1px solid var(--border-card); padding: 1.25rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-tertiary); font-weight: 700;">Live Detection Output</span>
+                <span id="cvConfidenceVal" style="font-size: 1.15rem; font-weight: 800; color: var(--primary-light);">96.8%</span>
             </div>
 
-            <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
-                <h4 style="font-size: 1rem; color: #fff; margin-bottom: 0.4rem;">2. OpenCV Preprocessing & Normalization</h4>
-                <p style="font-size: 0.88rem; color: var(--text-muted);">
-                    Frames are converted from BGR to RGB color space, bilaterally filtered for noise suppression, resized to 224×224, and normalized to float32 range [0, 1].
-                </p>
+            <div style="margin-bottom: 0.85rem;">
+                <span id="cvDetectedCategory" class="badge badge-recyclable" style="font-size: 1.05rem; padding: 0.5rem 1.2rem;">
+                    Recyclable Waste
+                </span>
             </div>
 
-            <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-left: 3px solid #8b5cf6;">
-                <h4 style="font-size: 1rem; color: #fff; margin-bottom: 0.4rem;">3. High-Speed Asynchronous Inference</h4>
-                <p style="font-size: 0.88rem; color: var(--text-muted);">
-                    Forward passes execute through the CNN model in under 15ms, maintaining consistent 30 FPS video streaming throughput.
-                </p>
+            <div class="progress-track" style="height: 8px; margin-bottom: 0.75rem;">
+                <div class="progress-bar-glow" id="cvProgressFill" style="background: var(--primary); width: 96.8%;"></div>
             </div>
 
-            <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-left: 3px solid var(--danger);">
-                <h4 style="font-size: 1rem; color: #fff; margin-bottom: 0.4rem;">4. Color-Coded HUD Annotations</h4>
-                <p style="font-size: 0.88rem; color: var(--text-muted);">
-                    Live overlays render dynamic bounding boxes: <span style="color: #34d399; font-weight: 600;">Emerald Green</span> for recyclables and <span style="color: #f87171; font-weight: 600;">Bright Red</span> for hazardous waste with real-time confidence scores.
-                </p>
+            <div style="font-size: 0.84rem; color: var(--text-secondary); display: flex; justify-content: space-between;">
+                <span>Allocated Destination:</span>
+                <strong id="cvBinVal" style="color: #fff;">Blue / Green Recycling Bin</strong>
+            </div>
+        </div>
+
+        <!-- 5-Stage Computer Vision Pipeline -->
+        <h4 style="font-size: 0.95rem; margin-bottom: 0.65rem; color: #fff;">Computer Vision Pipeline Tracker</h4>
+        <div class="pipeline-steps-wrap">
+            <div class="pipeline-step-item active">
+                <div class="step-num-badge">1</div>
+                <div>
+                    <div style="font-size: 0.88rem; font-weight: 700; color: #fff;">OpenCV Frame Acquisition</div>
+                    <div style="font-size: 0.78rem; color: var(--text-tertiary);">30 FPS video buffer ingestion with bilateral noise reduction</div>
+                </div>
+            </div>
+
+            <div class="pipeline-step-item active">
+                <div class="step-num-badge">2</div>
+                <div>
+                    <div style="font-size: 0.88rem; font-weight: 700; color: #fff;">CLAHE Contrast Enhancement</div>
+                    <div style="font-size: 0.78rem; color: var(--text-tertiary);">BGR &rarr; RGB conversion &amp; adaptive histogram equalization</div>
+                </div>
+            </div>
+
+            <div class="pipeline-step-item">
+                <div class="step-num-badge">3</div>
+                <div>
+                    <div style="font-size: 0.88rem; font-weight: 700; color: #fff;">ROI Tensor Extraction</div>
+                    <div style="font-size: 0.78rem; color: var(--text-tertiary);">Center crop scaled to [224, 224, 3] normalized float32</div>
+                </div>
+            </div>
+
+            <div class="pipeline-step-item">
+                <div class="step-num-badge">4</div>
+                <div>
+                    <div style="font-size: 0.88rem; font-weight: 700; color: #fff;">CNN Forward Pass Inference</div>
+                    <div style="font-size: 0.78rem; color: var(--text-tertiary);">TensorFlow 3-block convolutional feature extraction</div>
+                </div>
+            </div>
+
+            <div class="pipeline-step-item">
+                <div class="step-num-badge">5</div>
+                <div>
+                    <div style="font-size: 0.88rem; font-weight: 700; color: #fff;">Dynamic HUD Overlay</div>
+                    <div style="font-size: 0.78rem; color: var(--text-tertiary);">Bounding box color-coding &amp; confidence tag rendering</div>
+                </div>
             </div>
         </div>
     </div>
@@ -89,24 +184,4 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/webcam.js') }}"></script>
-<script>
-function switchMode(mode) {
-    const opencvDiv = document.getElementById('opencvContainer');
-    const browserDiv = document.getElementById('browserContainer');
-    const tabOpencv = document.getElementById('tabOpencv');
-    const tabBrowser = document.getElementById('tabBrowser');
-
-    if (mode === 'opencv') {
-        opencvDiv.style.display = 'block';
-        browserDiv.style.display = 'none';
-        tabOpencv.className = 'btn btn-primary';
-        tabBrowser.className = 'btn btn-secondary';
-    } else {
-        opencvDiv.style.display = 'none';
-        browserDiv.style.display = 'flex';
-        tabOpencv.className = 'btn btn-secondary';
-        tabBrowser.className = 'btn btn-primary';
-    }
-}
-</script>
 {% endblock %}

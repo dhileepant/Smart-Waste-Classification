@@ -3,101 +3,178 @@
 {% block title %}Model Architecture & System Specs | EcoSort AI{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1 class="page-title">Model Architecture & System Design</h1>
-    <p class="page-subtitle">Deep dive into the Convolutional Neural Network (CNN), OpenCV computer vision pipeline, and Flask deployment architecture.</p>
+<div class="hero-banner" style="margin-bottom: 2rem;">
+    <div class="hero-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>Deep Learning Architecture &bull; Computer Vision &bull; System Design</span>
+    </div>
+    <h1 class="page-title">Model Architecture &amp; System Specs</h1>
+    <p class="page-subtitle">
+        Deep dive into the Convolutional Neural Network (CNN) topology, OpenCV real-time image processing pipeline, and Flask deployment architecture.
+    </p>
 </div>
 
-<!-- Resume Highlights Callout -->
+<!-- Project Key Highlights / Resume Highlights Callout -->
 <div class="glass-card" style="border-left: 4px solid var(--primary); margin-bottom: 2rem;">
-    <h3 style="color: #34d399; margin-bottom: 0.75rem;">🚀 Project Key Highlights</h3>
-    <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 0.75rem; color: var(--text-muted);">
-        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
-            <span style="color: var(--primary); font-size: 1.1rem;">•</span>
-            <div><strong style="color: #fff;">Automated Waste Classification:</strong> Custom multi-block Convolutional Neural Network (CNN) categorizing waste into recyclable and hazardous/non-recyclable types with high accuracy.</div>
-        </li>
-        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
-            <span style="color: var(--primary); font-size: 1.1rem;">•</span>
-            <div><strong style="color: #fff;">Real-Time OpenCV Pipeline & Flask Deployment:</strong> Low-latency image processing pipeline utilizing OpenCV for adaptive filtering, color conversion, ROI bounding box overlays, and MJPEG video streaming deployed via Flask.</div>
-        </li>
-        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
-            <span style="color: var(--primary); font-size: 1.1rem;">•</span>
-            <div><strong style="color: #fff;">Performance Optimization & Hyperparameter Tuning:</strong> Extensive data augmentation (rotation, zooming, horizontal flipping, shear) and regularization (BatchNormalization, spatial Dropout, learning rate decay) delivering fast, robust predictions.</div>
-        </li>
-    </ul>
+    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+        <span style="font-size: 1.5rem;">🚀</span>
+        <h3 style="color: var(--primary-light); font-size: 1.25rem;">Project Key Highlights &amp; Accomplishments</h3>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+            <span style="color: var(--primary-light); font-weight: 800; font-size: 1.1rem; line-height: 1.4;">✓</span>
+            <div>
+                <strong style="color: #fff;">Automated Waste Classification System:</strong>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem;">
+                    Engineered and trained a multi-block Convolutional Neural Network (CNN) in TensorFlow/Keras to categorize waste into recyclable and non-recyclable/hazardous types with high generalization accuracy.
+                </p>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+            <span style="color: var(--primary-light); font-weight: 800; font-size: 1.1rem; line-height: 1.4;">✓</span>
+            <div>
+                <strong style="color: #fff;">Real-Time OpenCV Image Processing Pipeline &amp; Flask Deployment:</strong>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem;">
+                    Constructed a high-throughput computer vision pipeline using OpenCV for frame ingestion, CLAHE contrast equalization, central ROI targeting, and dynamic HUD bounding boxes, deployed via Flask with live MJPEG streaming.
+                </p>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+            <span style="color: var(--primary-light); font-weight: 800; font-size: 1.1rem; line-height: 1.4;">✓</span>
+            <div>
+                <strong style="color: #fff;">Performance Optimization &amp; Hyperparameter Tuning:</strong>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem;">
+                    Optimized training convergence and model robustness through spatial Dropout ($0.25 - 0.50$), Batch Normalization, learning rate reduction on plateau (`ReduceLROnPlateau`), and data augmentations (rotation, zoom, shear, flips).
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- CNN Model Architecture Breakdown -->
 <div class="glass-card" style="margin-bottom: 2rem;">
-    <h3 style="margin-bottom: 1.25rem;">🧠 Convolutional Neural Network (CNN) Layers</h3>
-    
-    <div class="grid-3" style="margin-bottom: 1.5rem;">
-        <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-top: 3px solid var(--secondary);">
-            <h4 style="color: #60a5fa; margin-bottom: 0.5rem;">Feature Extractor: Block 1</h4>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">
-                • <code>Conv2D(32, 3x3)</code> + ReLU<br>
-                • <code>BatchNormalization()</code><br>
-                • <code>Conv2D(32, 3x3)</code> + ReLU<br>
-                • <code>MaxPooling2D(2x2)</code><br>
-                • <code>Dropout(0.25)</code>
-            </p>
+    <div class="card-header-clean">
+        <div class="card-title-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2.2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+            <span>CNN Network Topology (3 Convolutional Stages)</span>
+        </div>
+        <span class="telemetry-chip">44.5M Parameters</span>
+    </div>
+
+    <!-- 3 Convolutional Blocks Grid -->
+    <div class="grid-3col" style="margin-bottom: 1.5rem;">
+        <div style="background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-top: 3px solid var(--accent-blue); padding: 1.25rem; border-radius: var(--radius-sm);">
+            <h4 style="color: #60a5fa; margin-bottom: 0.6rem; font-size: 1.05rem;">Stage 1: Low-Level Filters</h4>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; color: var(--text-secondary);">
+                <li><code>Conv2D(32, 3x3)</code> + ReLU</li>
+                <li><code>BatchNormalization()</code></li>
+                <li><code>Conv2D(32, 3x3)</code> + ReLU</li>
+                <li><code>MaxPooling2D(2x2)</code></li>
+                <li><code>Dropout(0.25)</code></li>
+            </ul>
         </div>
 
-        <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-top: 3px solid var(--primary);">
-            <h4 style="color: #34d399; margin-bottom: 0.5rem;">Mid-Level Patterns: Block 2</h4>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">
-                • <code>Conv2D(64, 3x3)</code> + ReLU<br>
-                • <code>BatchNormalization()</code><br>
-                • <code>Conv2D(64, 3x3)</code> + ReLU<br>
-                • <code>MaxPooling2D(2x2)</code><br>
-                • <code>Dropout(0.25)</code>
-            </p>
+        <div style="background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-top: 3px solid var(--primary); padding: 1.25rem; border-radius: var(--radius-sm);">
+            <h4 style="color: var(--primary-light); margin-bottom: 0.6rem; font-size: 1.05rem;">Stage 2: Mid-Level Textures</h4>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; color: var(--text-secondary);">
+                <li><code>Conv2D(64, 3x3)</code> + ReLU</li>
+                <li><code>BatchNormalization()</code></li>
+                <li><code>Conv2D(64, 3x3)</code> + ReLU</li>
+                <li><code>MaxPooling2D(2x2)</code></li>
+                <li><code>Dropout(0.25)</code></li>
+            </ul>
         </div>
 
-        <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-top: 3px solid #8b5cf6;">
-            <h4 style="color: #a78bfa; margin-bottom: 0.5rem;">High-Level Semantics: Block 3</h4>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">
-                • <code>Conv2D(128, 3x3)</code> + ReLU<br>
-                • <code>BatchNormalization()</code><br>
-                • <code>Conv2D(128, 3x3)</code> + ReLU<br>
-                • <code>MaxPooling2D(2x2)</code><br>
-                • <code>Dropout(0.30)</code>
-            </p>
+        <div style="background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-top: 3px solid var(--accent-purple); padding: 1.25rem; border-radius: var(--radius-sm);">
+            <h4 style="color: #a78bfa; margin-bottom: 0.6rem; font-size: 1.05rem;">Stage 3: High-Level Semantics</h4>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; color: var(--text-secondary);">
+                <li><code>Conv2D(128, 3x3)</code> + ReLU</li>
+                <li><code>BatchNormalization()</code></li>
+                <li><code>Conv2D(128, 3x3)</code> + ReLU</li>
+                <li><code>MaxPooling2D(2x2)</code></li>
+                <li><code>Dropout(0.30)</code></li>
+            </ul>
         </div>
     </div>
 
-    <div style="background: rgba(255, 255, 255, 0.03); padding: 1.25rem; border-radius: var(--radius-sm); border-left: 3px solid #f59e0b;">
-        <h4 style="color: #fbbf24; margin-bottom: 0.5rem;">Classification Head</h4>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">
-            • <code>Flatten()</code> $\rightarrow$ <code>Dense(512, ReLU)</code> $\rightarrow$ <code>BatchNormalization()</code> $\rightarrow$ <code>Dropout(0.50)</code> $\rightarrow$ <code>Dense(2, Softmax)</code><br>
-            • <strong>Optimizer:</strong> Adam with learning rate reduction on plateau (decay factor 0.3)<br>
-            • <strong>Loss Function:</strong> Categorical Cross-Entropy
+    <!-- Dense Head Banner -->
+    <div style="background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-left: 4px solid var(--warning); padding: 1.25rem; border-radius: var(--radius-sm);">
+        <h4 style="color: #fbbf24; margin-bottom: 0.4rem; font-size: 1.02rem;">Dense Classification Head &amp; Softmax Engine</h4>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+            <code>Flatten()</code> &rarr; <code>Dense(512, ReLU)</code> &rarr; <code>BatchNormalization()</code> &rarr; <code>Dropout(0.50)</code> &rarr; <code>Dense(2, Softmax)</code>.<br>
+            Outputs categorical class probabilities for <strong>Recyclable</strong> vs. <strong>Hazardous</strong> waste.
         </p>
     </div>
 </div>
 
-<!-- OpenCV Pipeline & Training Specifications -->
-<div class="grid-2">
+<!-- Specs & Pipeline Details (2 Columns) -->
+<div class="grid-2col">
+    <!-- Hyperparameters Table -->
     <div class="glass-card">
-        <h3 style="margin-bottom: 1rem;">📷 OpenCV Processing Pipeline</h3>
-        <ul style="list-style-type: disc; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem;">
-            <li><strong>BGR to RGB Conversion:</strong> Standardizes color channels across camera hardware.</li>
-            <li><strong>CLAHE Enhancement:</strong> Contrast Limited Adaptive Histogram Equalization for varied lighting conditions.</li>
-            <li><strong>Spatial Resizing:</strong> Interpolation to $224 \times 224$ pixels matching CNN tensor dimensions.</li>
-            <li><strong>Tensor Normalization:</strong> Pixel scaling from $[0, 255]$ integer range to $[0.0, 1.0]$ float32.</li>
-            <li><strong>Live ROI HUD:</strong> Real-time bounding box rendering and category status banners.</li>
-        </ul>
+        <h3 style="margin-bottom: 1rem;">⚙️ Hyperparameters &amp; Training Setup</h3>
+        <table class="specs-table">
+            <tbody>
+                <tr>
+                    <th>Input Tensor</th>
+                    <td><strong>224 &times; 224 &times; 3 (RGB)</strong></td>
+                </tr>
+                <tr>
+                    <th>Optimizer</th>
+                    <td><strong>Adam (Initial LR: 0.001)</strong></td>
+                </tr>
+                <tr>
+                    <th>LR Scheduler</th>
+                    <td><strong>ReduceLROnPlateau (factor: 0.3, patience: 3)</strong></td>
+                </tr>
+                <tr>
+                    <th>Loss Function</th>
+                    <td><strong>Categorical Cross-Entropy</strong></td>
+                </tr>
+                <tr>
+                    <th>Batch Size</th>
+                    <td><strong>32 samples per step</strong></td>
+                </tr>
+                <tr>
+                    <th>Inference Speed</th>
+                    <td><strong>~11 - 14 ms per forward pass</strong></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
+    <!-- OpenCV Video Pipeline Specs -->
     <div class="glass-card">
-        <h3 style="margin-bottom: 1rem;">🔄 Data Augmentation Strategy</h3>
-        <ul style="list-style-type: disc; padding-left: 1.25rem; color: var(--text-muted); font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem;">
-            <li><strong>Random Rotation:</strong> $\pm 25^\circ$ to handle orientation variance.</li>
-            <li><strong>Width & Height Shift:</strong> $15\%$ translational jitter.</li>
-            <li><strong>Shear Transformation:</strong> $15\%$ perspective distortion.</li>
-            <li><strong>Zoom Range:</strong> $20\%$ scaling to simulate variable camera distances.</li>
-            <li><strong>Horizontal Flipping:</strong> Simulates mirror symmetries of bottles, cans, and cartons.</li>
-        </ul>
+        <h3 style="margin-bottom: 1rem;">📷 Real-Time OpenCV Pipeline</h3>
+        <table class="specs-table">
+            <tbody>
+                <tr>
+                    <th>Color Standardization</th>
+                    <td><strong>BGR &rarr; RGB conversion</strong></td>
+                </tr>
+                <tr>
+                    <th>Contrast Adjustment</th>
+                    <td><strong>CLAHE (clipLimit=2.0, tileGrid=8x8)</strong></td>
+                </tr>
+                <tr>
+                    <th>Spatial Normalization</th>
+                    <td><strong>Interpolated area resize &amp; scaling [0, 1]</strong></td>
+                </tr>
+                <tr>
+                    <th>Target Segmentation</th>
+                    <td><strong>Central Dynamic ROI Window</strong></td>
+                </tr>
+                <tr>
+                    <th>HUD Annotation</th>
+                    <td><strong>Color-coded bounding box + FPS Telemetry</strong></td>
+                </tr>
+                <tr>
+                    <th>Stream Protocol</th>
+                    <td><strong>MJPEG Multipart HTTP streaming</strong></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

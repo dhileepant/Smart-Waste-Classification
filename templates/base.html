@@ -3,45 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Smart Waste Classification | AI & Computer Vision{% endblock %}</title>
+    <title>{% block title %}EcoSort AI | Intelligent Waste Segregation System{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♻️</text></svg>">
+    <meta name="description" content="AI-Powered automated waste classification and computer vision segregation system using TensorFlow, OpenCV, and Flask.">
 </head>
 <body>
     <!-- Top Navigation Bar -->
-    <nav class="navbar">
-        <a href="/" class="nav-brand">
-            <div class="brand-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="23 4 23 10 17 10"></polyline>
-                    <polyline points="1 20 1 14 7 14"></polyline>
-                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                </svg>
+    <header>
+        <nav class="navbar">
+            <a href="/" class="nav-brand">
+                <div class="brand-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                </div>
+                <div class="brand-title-wrap">
+                    <span>EcoSort AI</span>
+                    <span class="brand-sub">Intelligent Segregation</span>
+                </div>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Dashboard
+                </a></li>
+                <li><a href="/realtime" class="nav-link {% if request.path == '/realtime' %}active{% endif %}">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    Real-Time CV
+                </a></li>
+                <li><a href="/history" class="nav-link {% if request.path == '/history' %}active{% endif %}">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    History & Logs
+                </a></li>
+                <li><a href="/about" class="nav-link {% if request.path == '/about' %}active{% endif %}">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    Model Architecture
+                </a></li>
+            </ul>
+
+            <div class="nav-status-pill">
+                <div class="pulsing-dot"></div>
+                <span>CNN Engine Active</span>
             </div>
-            <span>EcoSort AI</span>
-        </a>
+        </nav>
+    </header>
 
-        <ul class="nav-links">
-            <li><a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Dashboard</a></li>
-            <li><a href="/realtime" class="nav-link {% if request.path == '/realtime' %}active{% endif %}">Live Stream (OpenCV)</a></li>
-            <li><a href="/history" class="nav-link {% if request.path == '/history' %}active{% endif %}">History & Stats</a></li>
-            <li><a href="/about" class="nav-link {% if request.path == '/about' %}active{% endif %}">Model Architecture</a></li>
-        </ul>
-
-        <div class="nav-badge">
-            <span>CNN + OpenCV v2.0</span>
-        </div>
-    </nav>
-
-    <!-- Main Dynamic Content -->
+    <!-- Main Dynamic Viewport -->
     <main class="main-container">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
+    <!-- Global Executive Footer -->
     <footer class="footer">
-        <p><strong>Smart Waste Classification System</strong> | Powered by Python, TensorFlow, OpenCV & Flask</p>
-        <p style="margin-top: 0.35rem; color: #4b5563;">Automated Environmental Recycling & Waste Segregation Engine</p>
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+            <p><strong>EcoSort AI</strong> &bull; Automated Environmental Waste Classification &amp; Computer Vision System</p>
+            <p style="color: var(--text-tertiary); font-size: 0.8rem;">Engineered with Python, TensorFlow CNN, OpenCV Pipeline &amp; Flask Architecture</p>
+        </div>
     </footer>
 
     {% block scripts %}{% endblock %}
